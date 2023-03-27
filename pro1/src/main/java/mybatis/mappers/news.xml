@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="mapper.news">
+	<resultMap id="memResult" type="newsVO">
+		<result property="aid" column="aid" />
+		<result property="title" column="title" />
+		<result property="img" column="img" />
+		<result property="date" column="date" />
+		<result property="content" column="content" />
+	</resultMap>
+
+
+	<select id="selectAllNewsList" resultMap="memResult">
+	<![CDATA[
+		select * from news order by aid
+	]]>
+	</select>
+
+	<select id="selectAid" resultType="int">
+	<![CDATA[
+		select name from news where aid = '1'
+	]]>
+	</select>
+
+	<select id="selectPwd" resultType="String">
+	<![CDATA[
+		select name from news where title = '아무거나'
+	]]>
+	</select>
+
+	<select id="selectNewsByAid" resultType="newsVO"
+		parameterType="int">
+	<![CDATA[
+		select * from news where aid = #{aid}
+	]]>
+	</select>
+
+	<select id="selectNewsByTitle" resultMap="memResult"
+		parameterType="String">
+	<![CDATA[
+		select * from news where title = #{title}
+	]]>
+	</select>
+
+	<insert id="insertNews" parameterType="newsVO">
+		<![CDATA[
+			insert into news(aid,title,img,content) values(#{aid}, #{title}, #{img}, #{content})
+		]]>
+	</insert>
+
+	<insert id="insertNews2" parameterType="java.util.Map">
+		<![CDATA[
+			insert into news(aid,title,img,content) values(#{aid}, #{title}, #{img}, #{content})
+		]]>
+	</insert>
+
+	<update id="updateNews" parameterType="newsVO">
+		<![CDATA[
+			update news set title=#{title}, img=#{img}, content=#{content} where aid=#{aid}
+		]]>
+	</update>
+
+	<delete id="deleteNews" parameterType="int">
+		<![CDATA[
+		delete from news where aid=#{aid}
+		]]>
+	</delete>
+
+
+	<select id="searchNews" parameterType="newsVO"
+		resultMap="memResult">
+		<![CDATA[
+			select * from news
+		]]>
+		<where>
+			<if test="img !='' and img != null">
+				img = #{img}
+			</if>
+			<if test="content !='' and content != null">
+				and content=#{content}
+			</if>
+		</where>
+		order by joinDate desc
+	</select>
+
+	<!-- <sql id="a"> <![CDATA[ select * from t_member ]]> </sql> -->
+
+
+
+	<select id="foreachSelect" resultMap="memResult"
+		parameterType="java.util.Map">
+		<!-- <include refid="a" /> -->
+	<![CDATA[
+ 		select * from news 
+ 	]]>
+
+		where name in
+		<foreach item="item" collection="list" open="(" separator=","
+			close=")">
+			#{item}
+		</foreach>
+		order by joinDate desc
+	</select>
+
+
+	<insert id="foreachInsert" parameterType="java.util.Map">
+
+		insert INTO news(aid, title, img, content)
+		VALUES
+		<foreach item="item" collection="list" index="index"
+			separator=",">
+			(#{item.aid}, #{item.title}, #{item.img}, #{item.content})
+		</foreach>
+	</insert>
+
+
+	<select id="selectLike" resultMap="memResult"
+		parameterType="String">
+		<![CDATA[
+ 			select * from news where name like concat('%', #{img}, '%') 
+ 	 		]]>
+	</select>
+
+</mapper>
